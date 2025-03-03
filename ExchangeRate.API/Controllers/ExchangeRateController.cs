@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using ExchangeRate.Services.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using System.Threading.Tasks;
-using System.Xml;
-using BCCRService; // Asegúrate de que este namespace es correcto
 
 namespace ExchangeRate.API.Controllers
 {
@@ -12,9 +8,16 @@ namespace ExchangeRate.API.Controllers
     [Route("api/[controller]")]
     public class ExchangeRateController : ControllerBase
     {
+        private readonly IExchangeRateService _exchangeRateService;
+
+        public ExchangeRateController(IExchangeRateService exchangeRateService)
+        {
+            _exchangeRateService = exchangeRateService;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetExchangeRates(
-            [FromQuery] string startDate, 
+            [FromQuery] string startDate,
             [FromQuery] string endDate)
         {
             try
@@ -31,58 +34,7 @@ namespace ExchangeRate.API.Controllers
                     return BadRequest("La fecha de inicio no puede ser mayor que la fecha de fin.");
                 }
 
-                List<object> exchangeRates = new List<object>();
-
-                using (var client = new wsindicadoreseconomicosSoapClient(
-                           wsindicadoreseconomicosSoapClient.EndpointConfiguration.wsindicadoreseconomicosSoap))
-                {
-                    for (DateTime date = start; date <= end; date = date.AddDays(1))
-                    {
-                        string fecha = date.ToString("dd/MM/yyyy");
-
-                        // Llamada para obtener el tipo de cambio COMPRA (indicador "317")
-                        var resultCompra = await client.ObtenerIndicadoresEconomicosXMLAsync(
-                            "317",
-                            fecha,
-                            fecha,
-                            "Deyler Alvarez",
-                            "N",
-                            "deylerafernandez@gmail.com",
-                            "6NAN2AA77E"
-                        );
-
-                        // Llamada para obtener el tipo de cambio VENTA (indicador "318")
-                        var resultVenta = await client.ObtenerIndicadoresEconomicosXMLAsync(
-                            "318",
-                            fecha,
-                            fecha,
-                            "Deyler Alvarez",
-                            "N",
-                            "deylerafernandez@gmail.com",
-                            "6NAN2AA77E"
-                        );
-
-                        // Procesar XML
-                        XmlDocument xmlCompra = new XmlDocument();
-                        xmlCompra.LoadXml(resultCompra);
-                        XmlNode? nodeCompra = xmlCompra.SelectSingleNode("Datos_de_INGC011_CAT_INDICADORECONOMIC/INGC011_CAT_INDICADORECONOMIC/NUM_VALOR");
-
-                        XmlDocument xmlVenta = new XmlDocument();
-                        xmlVenta.LoadXml(resultVenta);
-                        XmlNode? nodeVenta = xmlVenta.SelectSingleNode("Datos_de_INGC011_CAT_INDICADORECONOMIC/INGC011_CAT_INDICADORECONOMIC/NUM_VALOR");
-
-                        if (nodeCompra != null && decimal.TryParse(nodeCompra.InnerText, out decimal tipoCambioCompra) &&
-                            nodeVenta != null && decimal.TryParse(nodeVenta.InnerText, out decimal tipoCambioVenta))
-                        {
-                            exchangeRates.Add(new
-                            {
-                                Fecha = fecha,
-                                TipoCambioCompra = tipoCambioCompra,
-                                TipoCambioVenta = tipoCambioVenta
-                            });
-                        }
-                    }
-                }
+                var exchangeRates = await _exchangeRateService.GetExchangeRatesAsync(start, end);
 
                 if (exchangeRates.Count == 0)
                 {

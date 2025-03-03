@@ -1,67 +1,76 @@
-﻿//using ExchangeRate.Data.Repositories;
-//using ExchangeRate.Domain.Entities;
-//using System;
-//using System.Threading.Tasks;
+﻿using BCCRService;
+using ExchangeRate.Domain.Entities;
+using Microsoft.Extensions.Options;
+using System.Globalization;
+using System.Xml;
 
-//namespace ExchangeRate.Services.Services
-//{
-//    public class ExchangeRateService
-//    {
-//        private readonly IExchangeRateRepository _repository;
-//        private readonly CentralBankServiceClient _centralBankClient;
-//        private readonly ILogRepository _logRepository;
+namespace ExchangeRate.Services.Services
+{
+    public class ExchangeRateService : IExchangeRateService
+    {
+        private readonly CentralBankServiceOptions _bankOptions;
 
-//        public ExchangeRateService(IExchangeRateRepository repository,
-//                                   CentralBankServiceClient centralBankClient,
-//                                   ILogRepository logRepository)
-//        {
-//            _repository = repository;
-//            _centralBankClient = centralBankClient;
-//            _logRepository = logRepository;
-//        }
+        public ExchangeRateService(IOptions<CentralBankServiceOptions> bankOptions)
+        {
+            _bankOptions = bankOptions.Value;
+        }
 
-//        // Método para obtener el tipo de cambio actual del servicio WCF y guardarlo
-//        public async Task AddCurrentExchangeRateAsync()
-//        {
-//            try
-//            {
-//                // Consumir el servicio WCF para obtener el tipo de cambio del día actual
-//                var result = _centralBankClient.GetExchangeRate(DateTime.Today);
-//                if (result != null)
-//                {
-//                    var rate = new ExchangeRate
-//                    {
-//                        Date = DateTime.Today,
-//                        BuyRate = result.BuyRate,
-//                        SellRate = result.SellRate
-//                    };
-//                    await _repository.InsertExchangeRateAsync(rate);
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                // Registrar el error en la bitácora
-//                await _logRepository.LogErrorAsync(ex.Message);
-//                throw;
-//            }
-//        }
+        public async Task<List<ExchangeRateEntity>> GetExchangeRatesAsync(DateTime startDate, DateTime endDate)
+        {
+            List<ExchangeRateEntity> exchangeRates = new List<ExchangeRateEntity>();
 
-//        // Método para modificar (solo permite el día actual)
-//        public async Task UpdateExchangeRateAsync(ExchangeRate rate)
-//        {
-//            if (rate.Date != DateTime.Today)
-//                throw new Exception("No se puede modificar el tipo de cambio de días anteriores");
+            using (var client = new wsindicadoreseconomicosSoapClient(
+                       wsindicadoreseconomicosSoapClient.EndpointConfiguration.wsindicadoreseconomicosSoap))
+            {
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    string fecha = date.ToString("dd/MM/yyyy");
 
-//            await _repository.UpdateExchangeRateAsync(rate);
-//        }
+                    // Llamada para obtener el tipo de cambio COMPRA (indicador "317")
+                    var resultCompra = await client.ObtenerIndicadoresEconomicosXMLAsync(
+                        "317",
+                        fecha,
+                        fecha,
+                        _bankOptions.Usuario,
+                        "N",
+                        _bankOptions.Correo,
+                        _bankOptions.Token
+                    );
 
-//        // Método para eliminar (solo permite el día actual)
-//        public async Task DeleteExchangeRateAsync(int exchangeRateId, DateTime rateDate)
-//        {
-//            if (rateDate != DateTime.Today)
-//                throw new Exception("No se puede eliminar el tipo de cambio de días anteriores");
+                    // Llamada para obtener el tipo de cambio VENTA (indicador "318")
+                    var resultVenta = await client.ObtenerIndicadoresEconomicosXMLAsync(
+                        "318",
+                        fecha,
+                        fecha,
+                        _bankOptions.Usuario,
+                        "N",
+                        _bankOptions.Correo,
+                        _bankOptions.Token
+                    );
 
-//            await _repository.DeleteExchangeRateAsync(exchangeRateId);
-//        }
-//    }
-//}
+                    // Procesar XML
+                    XmlDocument xmlCompra = new XmlDocument();
+                    xmlCompra.LoadXml(resultCompra);
+                    XmlNode? nodeCompra = xmlCompra.SelectSingleNode("Datos_de_INGC011_CAT_INDICADORECONOMIC/INGC011_CAT_INDICADORECONOMIC/NUM_VALOR");
+
+                    XmlDocument xmlVenta = new XmlDocument();
+                    xmlVenta.LoadXml(resultVenta);
+                    XmlNode? nodeVenta = xmlVenta.SelectSingleNode("Datos_de_INGC011_CAT_INDICADORECONOMIC/INGC011_CAT_INDICADORECONOMIC/NUM_VALOR");
+
+                    if (nodeCompra != null && decimal.TryParse(nodeCompra.InnerText, out decimal tipoCambioCompra) &&
+                        nodeVenta != null && decimal.TryParse(nodeVenta.InnerText, out decimal tipoCambioVenta))
+                    {
+                        exchangeRates.Add(new ExchangeRateEntity
+                        {
+                            Fecha = fecha,
+                            TipoCambioCompra = tipoCambioCompra,
+                            TipoCambioVenta = tipoCambioVenta
+                        });
+                    }
+                }
+            }
+
+            return exchangeRates;
+        }
+    }
+}

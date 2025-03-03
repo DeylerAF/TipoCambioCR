@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -12,6 +12,7 @@
     <PackageReference Include="System.ServiceModel.Http" Version="6.0.*" />
     <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.*" />
     <PackageReference Include="System.ServiceModel.Security" Version="6.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>

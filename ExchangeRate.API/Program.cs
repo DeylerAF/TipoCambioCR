@@ -1,4 +1,13 @@
+using ExchangeRate.Services.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Registrar la configuración para CentralBankService
+builder.Services.Configure<ExchangeRate.Services.Services.CentralBankServiceOptions>(
+    builder.Configuration.GetSection("CentralBankService"));
+
+// Registrar los servicios
+builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
