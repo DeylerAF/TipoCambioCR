@@ -5,7 +5,7 @@ Accept: application/json
 
 ###
 
-GET {{ExchangeRate.API_HostAddress}}/api/exchangerate?startDate=01/02/2025&endDate=01/03/2025
+GET {{ExchangeRate.API_HostAddress}}/api/exchangerate?startDate=01/03/2025&endDate=01/03/2025
 Accept: application/json
 
 ###
