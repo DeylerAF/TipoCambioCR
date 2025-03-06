@@ -1,8 +1,8 @@
-﻿using ExchangeRate.Services.Services;
+﻿using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
-namespace ExchangeRate.API.Controllers
+namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

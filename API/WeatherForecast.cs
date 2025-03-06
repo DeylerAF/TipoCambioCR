@@ -1,4 +1,4 @@
-namespace ExchangeRate.API
+namespace API
 {
     public class WeatherForecast
     {

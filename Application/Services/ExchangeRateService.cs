@@ -1,10 +1,10 @@
 ﻿using BCCRService;
-using ExchangeRate.Domain.Entities;
+using Domain.Entities;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Xml;
 
-namespace ExchangeRate.Services.Services
+namespace Application.Services
 {
     public class ExchangeRateService : IExchangeRateService
     {

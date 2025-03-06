@@ -2,7 +2,7 @@
 using System.Xml;
 using BCCRService;
 
-namespace ExchangeRate.Services.Services
+namespace Application.Services
 {
     public class CentralBankServiceClient
     {

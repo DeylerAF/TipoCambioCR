@@ -1,6 +1,6 @@
-using ExchangeRate.Domain.Entities;
+using Domain.Entities;
 
-namespace ExchangeRate.Services.Services
+namespace Application.Services
 {
     public interface IExchangeRateService
     {

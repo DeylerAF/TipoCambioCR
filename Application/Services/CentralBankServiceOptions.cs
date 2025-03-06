@@ -1,4 +1,4 @@
-namespace ExchangeRate.Services.Services
+namespace Application.Services
 {
     public class CentralBankServiceOptions
     {

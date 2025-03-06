@@ -1,9 +1,9 @@
-using ExchangeRate.Services.Services;
+using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar la configuraciÃ³n para CentralBankService
-builder.Services.Configure<ExchangeRate.Services.Services.CentralBankServiceOptions>(
+// Registrar la configuración para CentralBankService
+builder.Services.Configure<CentralBankServiceOptions>(
     builder.Configuration.GetSection("CentralBankService"));
 
 // Registrar los servicios
@@ -19,8 +19,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp", builder =>
     {
         builder.WithOrigins("http://localhost:3000")
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
