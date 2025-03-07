@@ -1,4 +1,4 @@
-namespace Application.Services
+﻿namespace Domain.Configuration
 {
     public class CentralBankServiceOptions
     {

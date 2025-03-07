@@ -1,4 +1,6 @@
-using Application.Services;
+using Domain.Configuration;
+using Domain.Interfaces;
+using Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

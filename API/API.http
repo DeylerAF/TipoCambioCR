@@ -1,16 +1,16 @@
-@baseUrl = http://localhost:5099
+@API_HostAddress = http://localhost:5099
 
-GET {{baseUrl}}/api/exchangerate/
+GET {{API_HostAddress}}/api/exchangerate/
 Accept: application/json
 
 ###
 
-GET {{baseUrl}}/api/exchangerate?startDate=01/03/2025&endDate=01/03/2025
+GET {{API_HostAddress}}/api/exchangerate?startDate=01/03/2025&endDate=01/03/2025
 Accept: application/json
 
 ###
 
-GET {{baseUrl}}/weatherforecast/
+GET {{API_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
