@@ -1,4 +1,4 @@
-﻿namespace Domain.Configuration
+﻿namespace ServerLibrary.Helpers
 {
     public class CentralBankServiceOptions
     {

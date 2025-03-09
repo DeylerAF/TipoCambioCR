@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace ServerLibrary.Entities
 {
     public class ExchangeRateEntity
     {

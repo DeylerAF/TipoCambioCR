@@ -1,0 +1,16 @@
+@Server_HostAddress = http://localhost:5099
+
+GET {{Server_HostAddress}}/api/exchangerate/
+Accept: application/json
+
+###
+
+GET {{Server_HostAddress}}/api/exchangerate?startDate=01/03/2025&endDate=09/03/2025
+Accept: application/json
+
+###
+
+GET {{Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

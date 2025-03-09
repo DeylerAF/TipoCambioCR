@@ -1,16 +1,16 @@
-﻿using Domain.Interfaces;
+﻿using ServerLibrary.Repositories.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
-namespace API.Controllers
+namespace Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ExchangeRateController : ControllerBase
     {
-        private readonly IExchangeRateService _exchangeRateService;
+        private readonly IExchangeRateInterface _exchangeRateService;
 
-        public ExchangeRateController(IExchangeRateService exchangeRateService)
+        public ExchangeRateController(IExchangeRateInterface exchangeRateService)
         {
             _exchangeRateService = exchangeRateService;
         }

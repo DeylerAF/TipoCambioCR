@@ -1,18 +1,18 @@
 ﻿using BCCRService;
-using Domain.Configuration;
-using Domain.Entities;
-using Domain.Interfaces;
 using Microsoft.Extensions.Options;
+using ServerLibrary.Entities;
+using ServerLibrary.Repositories.Contracts;
 using System.Globalization;
 using System.Xml;
+using ServerLibrary.Helpers;
 
-namespace Domain.Services
+namespace ServerLibrary.Repositories.Implementations
 {
-    public class ExchangeRateService : IExchangeRateService
+    public class ExchangeRateRepository : IExchangeRateInterface
     {
         private readonly CentralBankServiceOptions _bankOptions;
 
-        public ExchangeRateService(IOptions<CentralBankServiceOptions> bankOptions)
+        public ExchangeRateRepository(IOptions<CentralBankServiceOptions> bankOptions)
         {
             _bankOptions = bankOptions.Value;
         }

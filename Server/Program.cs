@@ -1,15 +1,15 @@
-using Domain.Configuration;
-using Domain.Interfaces;
-using Domain.Services;
+ï»¿using ServerLibrary.Helpers;
+using ServerLibrary.Repositories.Contracts;
+using ServerLibrary.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrar la configuración para CentralBankService
+// Registrar la configuracion para CentralBankService
 builder.Services.Configure<CentralBankServiceOptions>(
     builder.Configuration.GetSection("CentralBankService"));
 
 // Registrar los servicios
-builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
+builder.Services.AddScoped<IExchangeRateInterface, ExchangeRateRepository>();
 
 // Add services to the container.
 builder.Services.AddControllers();
